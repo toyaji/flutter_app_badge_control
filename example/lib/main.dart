@@ -17,6 +17,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
+  int _badgeCount = 0;
   final _flutterAppBadgeControlPlugin = FlutterAppBadgeControl();
 
   @override
@@ -55,32 +56,40 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Center(
-          child: Column(
-            children: [
-              Text('Running on: $_platformVersion\n'),
-              ElevatedButton(
-                onPressed: () async {
-                  await FlutterAppBadgeControl.updateBadgeCount(1);
-                },
-                child: const Text('Update Badge Count'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  await FlutterAppBadgeControl.removeBadge();
-                },
-                child: const Text('Remove Badge'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  bool isSupported =
-                      await FlutterAppBadgeControl.isAppBadgeSupported();
-                  // ignore: avoid_print
-                  print('isSupported: $isSupported');
-                },
-                child: const Text('Is App Badge Supported'),
-              ),
-            ],
+        body: Builder(
+          builder: (context) => Center(
+            child: Column(
+              children: [
+                Text('Running on: $_platformVersion\n'),
+                Text('Badge count: $_badgeCount\n'),
+                ElevatedButton(
+                  onPressed: () async {
+                    setState(() => _badgeCount++);
+                    await FlutterAppBadgeControl.updateBadgeCount(
+                        _badgeCount);
+                  },
+                  child: const Text('Update Badge Count (+1)'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    setState(() => _badgeCount = 0);
+                    await FlutterAppBadgeControl.removeBadge();
+                  },
+                  child: const Text('Remove Badge'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    bool isSupported =
+                        await FlutterAppBadgeControl.isAppBadgeSupported();
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('isSupported: $isSupported')),
+                    );
+                  },
+                  child: const Text('Is App Badge Supported'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

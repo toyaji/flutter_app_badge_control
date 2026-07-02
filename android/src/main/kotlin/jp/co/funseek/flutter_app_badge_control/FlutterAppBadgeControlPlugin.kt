@@ -1,9 +1,12 @@
 package jp.co.funseek.flutter_app_badge_control
 
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.Context.NOTIFICATION_SERVICE
+import android.os.Build
 import androidx.annotation.NonNull
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -20,6 +23,11 @@ class FlutterAppBadgeControlPlugin: FlutterPlugin, MethodCallHandler {
   private lateinit var channel : MethodChannel
   private lateinit var context : Context
 
+  companion object {
+    private const val BADGE_CHANNEL_ID = "flutter_app_badge_control_channel"
+    private const val BADGE_NOTIFICATION_ID = 1001
+  }
+
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_app_badge_control")
     channel.setMethodCallHandler(this)
@@ -30,15 +38,83 @@ class FlutterAppBadgeControlPlugin: FlutterPlugin, MethodCallHandler {
     if (call.method == "getPlatformVersion") {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
     } else if (call.method == "updateBadgeCount") {
-      result.success(null)
+      val count = call.arguments as? Int
+      if (count == null) {
+        result.error("INVALID_ARGUMENT", "Invalid count value", null)
+      } else {
+        updateBadgeCount(count)
+        result.success(null)
+      }
     } else if (call.method == "removeBadge") {
-      val notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-      notificationManager.cancelAll()
+      cancelBadgeNotification()
+      result.success(null)
     } else if (call.method == "isAppBadgeSupported") {
-      result.success(true)
+      result.success(isAppBadgeSupported())
     } else {
       result.notImplemented()
     }
+  }
+
+  private fun updateBadgeCount(count: Int) {
+    if (count <= 0) {
+      cancelBadgeNotification()
+      return
+    }
+
+    ensureBadgeChannel()
+
+    val appLabel = context.applicationInfo.loadLabel(context.packageManager)
+
+    val notification = NotificationCompat.Builder(context, BADGE_CHANNEL_ID)
+      .setSmallIcon(context.applicationInfo.icon)
+      .setContentTitle(appLabel)
+      .setContentText(count.toString())
+      .setPriority(NotificationCompat.PRIORITY_MIN)
+      .setNumber(count)
+      .setSilent(true)
+      .setOngoing(true)
+      .setAutoCancel(false)
+      .build()
+
+    NotificationManagerCompat.from(context).notify(BADGE_NOTIFICATION_ID, notification)
+  }
+
+  private fun cancelBadgeNotification() {
+    NotificationManagerCompat.from(context).cancel(BADGE_NOTIFICATION_ID)
+  }
+
+  private fun ensureBadgeChannel() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+      val existing = notificationManager.getNotificationChannel(BADGE_CHANNEL_ID)
+      if (existing == null) {
+        val channel = NotificationChannel(
+          BADGE_CHANNEL_ID,
+          "App badge",
+          NotificationManager.IMPORTANCE_MIN
+        )
+        channel.setShowBadge(true)
+        channel.setSound(null, null)
+        channel.enableVibration(false)
+        notificationManager.createNotificationChannel(channel)
+      }
+    }
+  }
+
+  private fun isAppBadgeSupported(): Boolean {
+    if (!NotificationManagerCompat.from(context).areNotificationsEnabled()) {
+      return false
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+      val existing = notificationManager.getNotificationChannel(BADGE_CHANNEL_ID)
+      if (existing != null && existing.importance == NotificationManager.IMPORTANCE_NONE) {
+        return false
+      }
+    }
+
+    return true
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
