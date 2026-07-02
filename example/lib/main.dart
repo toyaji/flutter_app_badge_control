@@ -100,6 +100,7 @@ class _MyAppState extends State<MyApp> {
                   },
                   child: const Text('Update Badge Count (+1)'),
                 ),
+                const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () async {
                     setState(() => _badgeCount = 0);
@@ -107,6 +108,7 @@ class _MyAppState extends State<MyApp> {
                   },
                   child: const Text('Remove Badge'),
                 ),
+                const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () async {
                     bool isSupported =
