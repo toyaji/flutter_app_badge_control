@@ -23,7 +23,9 @@ using flutter::MethodResultFunctions;
 }  // namespace
 
 TEST(AppBadgeControlFlutterPlugin, GetPlatformVersion) {
-  AppBadgeControlFlutterPlugin plugin;
+  // The plugin requires a registrar, but getPlatformVersion does not use it,
+  // so a null registrar is sufficient for this test.
+  AppBadgeControlFlutterPlugin plugin(nullptr);
   // Save the reply value from the success callback.
   std::string result_string;
   plugin.HandleMethodCall(

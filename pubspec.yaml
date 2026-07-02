@@ -49,7 +49,7 @@ flutter:
       macos:
         pluginClass: AppBadgeControlFlutterPlugin
       windows:
-        pluginClass: AppBadgeControlFlutterPlugin
+        pluginClass: AppBadgeControlFlutterPluginCApi
       web:
         pluginClass: AppBadgeControlFlutterWeb
         fileName: app_badge_control_flutter_web.dart
