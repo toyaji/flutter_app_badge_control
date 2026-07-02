@@ -1,9 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_app_badge_control/flutter_app_badge_control_method_channel.dart';
+import 'package:app_badge_control_flutter/app_badge_control_flutter_method_channel.dart';
 
 void main() {
-  MethodChannelFlutterAppBadgeControl platform = MethodChannelFlutterAppBadgeControl();
+  MethodChannelAppBadgeControlFlutter platform =
+      MethodChannelAppBadgeControlFlutter();
   const MethodChannel channel = MethodChannel('flutter_app_badge_control');
 
   TestWidgetsFlutterBinding.ensureInitialized();

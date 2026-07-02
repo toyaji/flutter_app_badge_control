@@ -4,19 +4,19 @@
 import PackageDescription
 
 let package = Package(
-    name: "flutter_app_badge_control",
+    name: "app_badge_control_flutter",
     platforms: [
         .iOS("12.0")
     ],
     products: [
-        .library(name: "flutter-app-badge-control", targets: ["flutter_app_badge_control"])
+        .library(name: "app-badge-control-flutter", targets: ["app_badge_control_flutter"])
     ],
     dependencies: [
         .package(name: "FlutterFramework", path: "../FlutterFramework")
     ],
     targets: [
         .target(
-            name: "flutter_app_badge_control",
+            name: "app_badge_control_flutter",
             dependencies: [
                 .product(name: "FlutterFramework", package: "FlutterFramework")
             ]

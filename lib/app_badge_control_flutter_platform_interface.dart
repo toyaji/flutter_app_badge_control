@@ -1,25 +1,25 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'flutter_app_badge_control_method_channel.dart';
+import 'app_badge_control_flutter_method_channel.dart';
 
-abstract class FlutterAppBadgeControlPlatform extends PlatformInterface {
-  /// Constructs a FlutterAppBadgeControlPlatform.
-  FlutterAppBadgeControlPlatform() : super(token: _token);
+abstract class AppBadgeControlFlutterPlatform extends PlatformInterface {
+  /// Constructs an AppBadgeControlFlutterPlatform.
+  AppBadgeControlFlutterPlatform() : super(token: _token);
 
   static final Object _token = Object();
 
-  static FlutterAppBadgeControlPlatform _instance =
-      MethodChannelFlutterAppBadgeControl();
+  static AppBadgeControlFlutterPlatform _instance =
+      MethodChannelAppBadgeControlFlutter();
 
-  /// The default instance of [FlutterAppBadgeControlPlatform] to use.
+  /// The default instance of [AppBadgeControlFlutterPlatform] to use.
   ///
-  /// Defaults to [MethodChannelFlutterAppBadgeControl].
-  static FlutterAppBadgeControlPlatform get instance => _instance;
+  /// Defaults to [MethodChannelAppBadgeControlFlutter].
+  static AppBadgeControlFlutterPlatform get instance => _instance;
 
   /// Platform-specific implementations should set this with their own
-  /// platform-specific class that extends [FlutterAppBadgeControlPlatform] when
+  /// platform-specific class that extends [AppBadgeControlFlutterPlatform] when
   /// they register themselves.
-  static set instance(FlutterAppBadgeControlPlatform instance) {
+  static set instance(AppBadgeControlFlutterPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
   }

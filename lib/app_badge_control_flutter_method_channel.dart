@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-import 'flutter_app_badge_control_platform_interface.dart';
+import 'app_badge_control_flutter_platform_interface.dart';
 
-/// An implementation of [FlutterAppBadgeControlPlatform] that uses method channels.
-class MethodChannelFlutterAppBadgeControl
-    extends FlutterAppBadgeControlPlatform {
+/// An implementation of [AppBadgeControlFlutterPlatform] that uses method channels.
+class MethodChannelAppBadgeControlFlutter
+    extends AppBadgeControlFlutterPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
   final methodChannel = const MethodChannel('flutter_app_badge_control');

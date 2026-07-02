@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_app_badge_control/flutter_app_badge_control.dart';
+import 'package:app_badge_control_flutter/app_badge_control_flutter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +18,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
   int _badgeCount = 0;
-  final _flutterAppBadgeControlPlugin = FlutterAppBadgeControl();
+  final _appBadgeControlFlutterPlugin = AppBadgeControlFlutter();
 
   @override
   void initState() {
@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
     // We also handle the message potentially returning null.
     try {
       platformVersion =
-          await _flutterAppBadgeControlPlugin.getPlatformVersion() ??
+          await _appBadgeControlFlutterPlugin.getPlatformVersion() ??
               'Unknown platform version';
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
@@ -65,7 +65,7 @@ class _MyAppState extends State<MyApp> {
                 ElevatedButton(
                   onPressed: () async {
                     setState(() => _badgeCount++);
-                    await FlutterAppBadgeControl.updateBadgeCount(
+                    await AppBadgeControlFlutter.updateBadgeCount(
                         _badgeCount);
                   },
                   child: const Text('Update Badge Count (+1)'),
@@ -73,15 +73,15 @@ class _MyAppState extends State<MyApp> {
                 ElevatedButton(
                   onPressed: () async {
                     setState(() => _badgeCount = 0);
-                    await FlutterAppBadgeControl.removeBadge();
+                    await AppBadgeControlFlutter.removeBadge();
                   },
                   child: const Text('Remove Badge'),
                 ),
                 ElevatedButton(
                   onPressed: () async {
                     bool isSupported =
-                        await FlutterAppBadgeControl.isAppBadgeSupported();
-                    if (!mounted) return;
+                        await AppBadgeControlFlutter.isAppBadgeSupported();
+                    if (!context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('isSupported: $isSupported')),
                     );

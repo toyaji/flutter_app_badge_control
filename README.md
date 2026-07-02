@@ -1,6 +1,49 @@
-# Flutter App Badge Control
+# app_badge_control_flutter
 
-`flutter_app_badge_control` is a Flutter plugin for managing app icon badges. It allows you to update or remove the badge count on both iOS and Android devices.
+`app_badge_control_flutter` is a Flutter plugin for managing app icon badges. It allows you to update or remove the badge count on both iOS and Android devices.
+
+## Why this fork exists
+
+This package is a fork of [`flutter_app_badge_control`](https://github.com/funseek/flutter_app_badge_control) by Funseek, republished under a new name and maintained independently. The original repository was forked and republished because:
+
+- **The upstream repository is no longer maintained.** No commits, releases, or reviews have landed there in a long time.
+- **It doesn't support the Swift Package Manager (SPM).** iOS projects that have migrated off CocoaPods can't consume it. This fork adds SPM support while keeping CocoaPods working.
+- **Issues and pull requests go unanswered.** Bug reports and contributions have no path to being reviewed or merged upstream.
+
+Since publishing changes under the original name isn't possible, this fork is published to pub.dev as a new, independent package: `app_badge_control_flutter`. Ongoing maintenance, bug fixes, and feature requests will happen here.
+
+## Migrating from `flutter_app_badge_control`
+
+Migration only requires a rename — the plugin's behavior and method signatures are unchanged.
+
+1. Update your dependency in `pubspec.yaml`:
+
+   ```yaml
+   dependencies:
+     # remove
+     # flutter_app_badge_control: ^0.0.3
+     # add
+     app_badge_control_flutter: ^0.1.0
+   ```
+
+2. Update your imports:
+
+   ```dart
+   // before
+   import 'package:flutter_app_badge_control/flutter_app_badge_control.dart';
+   // after
+   import 'package:app_badge_control_flutter/app_badge_control_flutter.dart';
+   ```
+
+3. Rename the class you call, `FlutterAppBadgeControl` → `AppBadgeControlFlutter`. Every method name and its signature stayed the same:
+
+   | Old (`flutter_app_badge_control`)              | New (`app_badge_control_flutter`)             |
+   | ----------------------------------------------- | ---------------------------------------------- |
+   | `FlutterAppBadgeControl.updateBadgeCount(count)` | `AppBadgeControlFlutter.updateBadgeCount(count)` |
+   | `FlutterAppBadgeControl.removeBadge()`           | `AppBadgeControlFlutter.removeBadge()`           |
+   | `FlutterAppBadgeControl.isAppBadgeSupported()`   | `AppBadgeControlFlutter.isAppBadgeSupported()`   |
+
+No native (Android/iOS) configuration changes are required — the native method channel and platform code are unchanged.
 
 ## Overview
 
@@ -26,28 +69,27 @@ For more information about notification channels on Android, please visit the [A
 To use the plugin, add the following import to your Dart file:
 
 ```dart
-import 'package:flutter_app_badge_control/flutter_app_badge_control.dart';
+import 'package:app_badge_control_flutter/app_badge_control_flutter.dart';
 ```
 
 ### Check if App Badge is Supported
 
 ```dart
-FlutterAppBadgeControl.isAppBadgeSupported().then((value) {
-  AppLog.d("isAppBadgeSupported: $value");
+AppBadgeControlFlutter.isAppBadgeSupported().then((value) {
+  debugPrint("isAppBadgeSupported: $value");
 });
 ```
 
 ### Remove Badge
 
 ```dart
-FlutterAppBadgeControl.removeBadge();
+AppBadgeControlFlutter.removeBadge();
 ```
 
 ### Update Badge Count
 
 ```dart
-FlutterAppBadgeControl.updateBadgeCount(1);
+AppBadgeControlFlutter.updateBadgeCount(1);
 ```
 
 **Note:** This method will not have any effect on Android devices.
-

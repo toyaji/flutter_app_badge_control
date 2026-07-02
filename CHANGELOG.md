@@ -1,3 +1,8 @@
+## 0.1.0
+
+* Forked from [`flutter_app_badge_control`](https://github.com/funseek/flutter_app_badge_control) and republished as `app_badge_control_flutter`. See the README's "Why this fork exists" and "Migrating from `flutter_app_badge_control`" sections for details.
+* Renamed the public Dart API: `FlutterAppBadgeControl` → `AppBadgeControlFlutter` (platform interface and method-channel implementation classes renamed accordingly).
+
 ## 0.0.3
 
 * Add Swift Package Manager support for iOS while keeping CocoaPods support.

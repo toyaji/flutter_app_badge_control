@@ -1,5 +1,5 @@
-name: flutter_app_badge_control_example
-description: Demonstrates how to use the flutter_app_badge_control plugin.
+name: app_badge_control_flutter_example
+description: Demonstrates how to use the app_badge_control_flutter plugin.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -17,9 +17,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flutter_app_badge_control:
+  app_badge_control_flutter:
     # When depending on this package from a real application you should use:
-    #   flutter_app_badge_control: ^x.y.z
+    #   app_badge_control_flutter: ^x.y.z
     # See https://dart.dev/tools/pub/dependencies#version-constraints
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
