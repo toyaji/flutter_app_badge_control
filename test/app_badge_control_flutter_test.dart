@@ -41,6 +41,7 @@ void main() {
     MockAppBadgeControlFlutterPlatform fakePlatform =
         MockAppBadgeControlFlutterPlatform();
     AppBadgeControlFlutterPlatform.instance = fakePlatform;
+    addTearDown(() => AppBadgeControlFlutterPlatform.instance = initialPlatform);
 
     expect(await appBadgeControlFlutterPlugin.getPlatformVersion(), '42');
   });

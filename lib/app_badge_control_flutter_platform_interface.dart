@@ -3,7 +3,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'app_badge_control_flutter_method_channel.dart';
 
 abstract class AppBadgeControlFlutterPlatform extends PlatformInterface {
-  /// Constructs a AppBadgeControlFlutterPlatform.
+  /// Constructs an AppBadgeControlFlutterPlatform.
   AppBadgeControlFlutterPlatform() : super(token: _token);
 
   static final Object _token = Object();

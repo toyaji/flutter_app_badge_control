@@ -76,7 +76,7 @@ import 'package:app_badge_control_flutter/app_badge_control_flutter.dart';
 
 ```dart
 AppBadgeControlFlutter.isAppBadgeSupported().then((value) {
-  AppLog.d("isAppBadgeSupported: $value");
+  debugPrint("isAppBadgeSupported: $value");
 });
 ```
 
