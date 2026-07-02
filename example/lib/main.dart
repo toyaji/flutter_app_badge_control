@@ -3,6 +3,10 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:app_badge_control_flutter/app_badge_control_flutter.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+import 'web_helper_stub.dart'
+    if (dart.library.js_interop) 'web_helper.dart';
 
 void main() {
   runApp(const MyApp());
@@ -61,6 +65,32 @@ class _MyAppState extends State<MyApp> {
             child: Column(
               children: [
                 Text('Running on: $_platformVersion\n'),
+                if (kIsWeb) ...[
+                  ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        await requestWebNotificationPermission();
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Web notification permission requested.',
+                            ),
+                          ),
+                        );
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Permission request failed: $e'),
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text('Request Web Notification Permission'),
+                  ),
+                  const SizedBox(height: 10),
+                ],
                 Text('Badge count: $_badgeCount\n'),
                 ElevatedButton(
                   onPressed: () async {
@@ -70,6 +100,7 @@ class _MyAppState extends State<MyApp> {
                   },
                   child: const Text('Update Badge Count (+1)'),
                 ),
+                const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () async {
                     setState(() => _badgeCount = 0);
@@ -77,6 +108,7 @@ class _MyAppState extends State<MyApp> {
                   },
                   child: const Text('Remove Badge'),
                 ),
+                const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () async {
                     bool isSupported =

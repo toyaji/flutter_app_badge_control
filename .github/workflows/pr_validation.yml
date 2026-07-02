@@ -109,3 +109,66 @@ jobs:
 
       - name: Verify pub.dev publishing
         run: flutter pub publish --dry-run
+
+  macos_build:
+    name: macOS Build Check
+    runs-on: macos-15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+
+      - name: Install dependencies
+        run: |
+          flutter pub get
+          cd example && flutter pub get
+
+      - name: Build macOS Example
+        working-directory: example
+        run: flutter build macos --debug
+
+  windows_build:
+    name: Windows Build Check
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+
+      - name: Install dependencies
+        run: |
+          flutter pub get
+          cd example && flutter pub get
+
+      - name: Build Windows Example
+        working-directory: example
+        run: flutter build windows --debug
+
+  web_build:
+    name: Web Build Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+
+      - name: Install dependencies
+        run: |
+          flutter pub get
+          cd example && flutter pub get
+
+      - name: Build Web Example
+        working-directory: example
+        run: flutter build web --release

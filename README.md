@@ -47,9 +47,19 @@ No native (Android/iOS) configuration changes are required — the native method
 
 ## Overview
 
-This plugin provides an easy way to control the badge count of your app's icon. It is compatible with both iOS and Android platforms. You can update the badge count, remove the badge, or check if badge support is available on the device.
+This plugin provides an easy way to control the badge count of your app's icon. It is compatible with iOS, Android, macOS, Windows, and Web. You can update the badge count, remove the badge, or check if badge support is available on the device.
 
 This plugin is inspired by and based on the [flutter_app_badger](https://github.com/g123k/flutter_app_badger) plugin.
+
+## Platform Behavior
+
+| Platform | Support Status | Implementation Details |
+| :--- | :--- | :--- |
+| **iOS** | Supported | Uses native iOS user notification settings. Requires permission request. |
+| **Android** | Partial | Implemented via notification channels since Android has no official standalone badge API. Calling `removeBadge()` cancels notifications. |
+| **macOS** | Supported | Updates the Dock icon badge using `NSApp.dockTile.badgeLabel`. |
+| **Windows** | Supported | Implemented via **Taskbar Overlay Icons** using Win32 `ITaskbarList3::SetOverlayIcon`. Displays a red circle with the badge count overlaying the app's taskbar icon. |
+| **Web** | Supported | Uses the Web Badging API (`navigator.setAppBadge`). Requires a **secure context** (HTTPS or `localhost`) and a **Chromium-based browser** (Chrome/Edge); Firefox and Safari are not supported. Mostly visible when the app is installed as a Progressive Web App (PWA). |
 
 ## Getting Started
 
@@ -63,6 +73,49 @@ For more information about requesting notification permissions, please refer to 
 On Android, the plugin uses notification channels to manage app icon badges, as there is no official support for badge count updates. Calling `removeBadge()` will cancel all notifications, effectively removing the badge. Note that calling `updateBadgeCount()` on Android will not have any effect.
 
 For more information about notification channels on Android, please visit the [Android Developer Documentation](https://developer.android.com/develop/ui/views/notifications/channels).
+
+### macOS
+
+No additional setup or permissions are required. The plugin updates the Dock tile icon badge natively using `NSApp.dockTile.badgeLabel`.
+
+### Windows
+
+No additional setup or permissions are required. Since standard Win32 desktop apps do not support native icon badges, the plugin displays the badge count as a **Taskbar Overlay Icon** on the application's taskbar window.
+
+### Web
+
+The Web Badging API (`navigator.setAppBadge`) relies on your app being installed as a **Progressive Web App (PWA)** and having **Notification Permissions**.
+
+> **Requirements & limitations:**
+> - **Secure context required.** The API is only exposed over **HTTPS** (or `localhost`). When served over plain HTTP, `navigator.setAppBadge` is undefined and `isAppBadgeSupported()` silently returns `false`.
+> - **Chromium-only.** The Badging API is currently supported by **Chrome and Edge (Chromium)** only. **Firefox and Safari do not support it**, so `isAppBadgeSupported()` returns `false` there.
+
+1. **Request Notification Permission**: You must request user permission before the badge can be shown on the dock/taskbar icon. Here is an example implementation using `dart:js_interop` (Dart 3.x compatible):
+
+```dart
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:js_interop';
+
+@JS('Notification.requestPermission')
+external JSPromise? _jsRequestPermission();
+
+Future<void> requestWebNotificationPermission() async {
+  if (kIsWeb) {
+    try {
+      final promise = _jsRequestPermission();
+      if (promise != null) {
+        final result = await promise.toDart;
+        final permissionStr = (result as JSString).toDart;
+        debugPrint('Notification Permission status: $permissionStr');
+      }
+    } catch (e) {
+      debugPrint('Failed to request permission: $e');
+    }
+  }
+}
+```
+
+2. **Run as PWA**: The application must be installed as a Progressive Web App (PWA) (via Chrome's/Edge's "Install" icon). The badge will be rendered on the standalone PWA's app launcher/dock icon rather than standard browser tabs.
 
 ## Usage
 
@@ -93,3 +146,15 @@ AppBadgeControlFlutter.updateBadgeCount(1);
 ```
 
 **Note:** This method will not have any effect on Android devices.
+
+## Troubleshooting
+
+### Web (PWA) Badge Not Showing Up
+Web Badging API relies heavily on browser permissions and operating system integration. If the badge doesn't appear on the PWA icon in macOS Dock:
+1. **Enable Notification Permissions**: Click the icon (lock or settings slider) on the left of the address bar inside your installed PWA window, and ensure **Notifications** are set to **Allow**.
+2. **Enable macOS System Settings**: Go to **System Settings** -> **Notifications** -> Find your PWA app in the list -> ensure **Badge app icon** is toggled **On**.
+3. **Standalone Mode Required**: The app icon badge will not be displayed on normal browser tabs. The web app must be installed and running as a Progressive Web App (PWA).
+
+### MissingPluginException on Web
+If you encounter `MissingPluginException` while calling badge control APIs on Web:
+* Web plugin registrations are dynamically resolved during the initial build. If you have modified dependencies or platforms in `pubspec.yaml`, you **must restart** the `flutter run` process completely. Simply hot reloading or hot restarting will not apply the web plugin register hook.
