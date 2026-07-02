@@ -51,9 +51,8 @@ flutter:
       windows:
         pluginClass: AppBadgeControlFlutterPlugin
       web:
-        default_package: app_badge_control_flutter
-        fileName: lib/app_badge_control_flutter_web.dart
         pluginClass: AppBadgeControlFlutterWeb
+        fileName: app_badge_control_flutter_web.dart
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
