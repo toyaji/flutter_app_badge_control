@@ -103,3 +103,15 @@ AppBadgeControlFlutter.updateBadgeCount(1);
 ```
 
 **Note:** This method will not have any effect on Android devices.
+
+## Troubleshooting
+
+### Web (PWA) Badge Not Showing Up
+Web Badging API relies heavily on browser permissions and operating system integration. If the badge doesn't appear on the PWA icon in macOS Dock:
+1. **Enable Notification Permissions**: Click the icon (lock or settings slider) on the left of the address bar inside your installed PWA window, and ensure **Notifications** are set to **Allow**.
+2. **Enable macOS System Settings**: Go to **System Settings** -> **Notifications** -> Find your PWA app in the list -> ensure **Badge app icon** is toggled **On**.
+3. **Standalone Mode Required**: The app icon badge will not be displayed on normal browser tabs. The web app must be installed and running as a Progressive Web App (PWA).
+
+### MissingPluginException on Web
+If you encounter `MissingPluginException` while calling badge control APIs on Web:
+* Web plugin registrations are dynamically resolved during the initial build. If you have modified dependencies or platforms in `pubspec.yaml`, you **must restart** the `flutter run` process completely. Simply hot reloading or hot restarting will not apply the web plugin register hook.
