@@ -56,10 +56,11 @@ This plugin is inspired by and based on the [flutter_app_badger](https://github.
 | Platform | Support Status | Implementation Details |
 | :--- | :--- | :--- |
 | **iOS** | Supported | Uses native iOS user notification settings. Requires permission request. |
-| **Android** | Partial | Implemented via notification channels since Android has no official standalone badge API. Calling `removeBadge()` cancels notifications. |
+| **Android** | Supported | Tied to system notifications. Android lacks a direct, standalone badge API, so the plugin posts a silent, ongoing notification using `NotificationCompat.Builder.setNumber` to display the badge. |
 | **macOS** | Supported | Updates the Dock icon badge using `NSApp.dockTile.badgeLabel`. |
 | **Windows** | Supported | Implemented via **Taskbar Overlay Icons** using Win32 `ITaskbarList3::SetOverlayIcon`. Displays a red circle with the badge count overlaying the app's taskbar icon. |
-| **Web** | Supported | Uses the Web Badging API (`navigator.setAppBadge`). Requires a **secure context** (HTTPS or `localhost`) and a **Chromium-based browser** (Chrome/Edge); Firefox and Safari are not supported. Mostly visible when the app is installed as a Progressive Web App (PWA). |
+| **Web** | Partial | Uses the Web Badging API (`navigator.setAppBadge`). Requires a **secure context** (HTTPS or `localhost`) and a **Chromium-based browser** (Chrome/Edge); Firefox and Safari are not supported. Mostly visible when the app is installed as a Progressive Web App (PWA). |
+| **Linux** | Unsupported | No native or standardized desktop-wide badge API exists across Linux desktop environments (GNOME, KDE, XFCE, etc.). |
 
 ## Getting Started
 
@@ -70,7 +71,15 @@ For more information about requesting notification permissions, please refer to 
 
 ### Android
 
-On Android, the plugin uses notification channels to manage app icon badges, as there is no official support for badge count updates. Calling `removeBadge()` will cancel all notifications, effectively removing the badge. Note that calling `updateBadgeCount()` on Android will not have any effect.
+Android does not provide a native, direct API to update or clear the badge count on the app icon. Instead, since Android 8.0 (Oreo), badge dots/numbers on launcher icons are tied to **active notifications** in the notification drawer.
+
+Because of this system design, the plugin implements badge control as follows:
+* **`updateBadgeCount(count)`**: Posts a silent, ongoing notification in a dedicated notification channel (`flutter_app_badge_control_channel`) with `.setNumber(count)`.
+* **`removeBadge()`**: Cancels this specific notification, which removes the badge dot/number.
+
+**Limitations:**
+1. **Launcher Dependent:** The appearance of the badge (whether it is a number or a simple dot) depends entirely on the device's launcher (e.g., Pixel Launcher displays a dot, while Samsung One UI can show numbers). Some custom launchers or custom ROMs may not support badges at all.
+2. **Notification Present:** The badge count is only visible as long as the silent, ongoing notification remains in the notification drawer.
 
 For more information about notification channels on Android, please visit the [Android Developer Documentation](https://developer.android.com/develop/ui/views/notifications/channels).
 
@@ -118,6 +127,10 @@ Future<void> requestWebNotificationPermission() async {
 
 2. **Run as PWA**: The application must be installed as a Progressive Web App (PWA) (via Chrome's/Edge's "Install" icon). The badge will be rendered on the standalone PWA's app launcher/dock icon rather than standard browser tabs.
 
+### Linux
+
+This plugin does not support Linux desktop environments. Linux has many different desktop environments (GNOME, KDE Plasma, XFCE, Cinnamon, etc.), none of which provide a standardized or unified D-Bus API for displaying app icon badge overlays on launcher/dock icons. Historically, some Ubuntu configurations supported the `Unity` launcher API, but since Unity has been deprecated, there is currently no universal way to implement badge support on Linux.
+
 ## Usage
 
 To use the plugin, add the following import to your Dart file:
@@ -145,8 +158,7 @@ AppBadgeControlFlutter.removeBadge();
 ```dart
 AppBadgeControlFlutter.updateBadgeCount(1);
 ```
-
-**Note:** This method will not have any effect on Android devices.
+**Note:** On Android, this will post a silent, ongoing notification to display the badge count. The visual representation (number vs. dot) varies depending on the launcher.
 
 ## Troubleshooting
 
